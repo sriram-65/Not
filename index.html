@@ -1,28 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Web Notification Demo</title>
+  <meta charset="UTF-8" />
+  <title>SW Notification Demo</title>
 </head>
 <body>
-  <h1>Web Notification Demo</h1>
-  <button onclick="sendNotification()">Send Notification</button>
+  <h1>Service Worker Notification Test</h1>
+  <button onclick="notify()">Show Notification</button>
 
   <script>
-    function sendNotification() {
-      // Request permission first
+    // Register the service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log("Service Worker registered", reg))
+        .catch(err => console.error("Service Worker registration failed:", err));
+    }
+
+    function notify() {
       Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          // Show the notification
-          new Notification("Hey Sriram!", {
-            body: "This is a simple web notification.",
-            icon: "https://via.placeholder.com/100" // optional icon
+        if (permission === 'granted') {
+          navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification('Hey Sriram!', {
+              body: 'This notification came from a Service Worker!',
+              icon: 'https://via.placeholder.com/100',
+              vibrate: [100, 50, 100],
+              tag: 'sw-notification'
+            });
           });
         } else {
-          alert("Permission not granted for notifications.");
+          alert('Notification permission not granted.');
         }
       });
     }
   </script>
 </body>
-</html>
+    </html>
